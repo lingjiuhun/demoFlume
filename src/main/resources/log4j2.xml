@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- https://www.cnblogs.com/zhangzhen894095789/p/6640808.html -->
+<configuration packages="org.apache.logging.log4j">
+    <appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <ThresholdFilter level="trace" onMatch="ACCEPT" onMismatch="DENY" />
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %class{36} %L %M - %msg%xEx%n" />
+        </Console>
+        <!--文件会打印出所有信息，这个log每次运行程序会自动清空，由append属性决定-->
+        <File name="Test" fileName="logs/test.log" append="false">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %class{36} %L %M - %msg%xEx%n" />
+        </File>
+        <RollingFile name="RollingFile" fileName="logs/app.log" filePattern="logs/$${date:yyyy-MM}/app-%d{MM-dd-yyyy}-%i.log">
+            <PatternLayout pattern="%d{yyyy-MM-dd 'at' HH:mm:ss z} %-5level %class{36} %L %M - %msg%xEx%n" />
+            <SizeBasedTriggeringPolicy size="50MB" />
+        </RollingFile>
+        <!--Flume 日志推送配置-->
+        <Flume name="FlumeMyAppender" compress="false" type="Avro">
+            <Agent host="192.168.126.131" port="4444"/>
+            <RFC5424Layout enterpriseNumber="18060" includeMDC="true" appName="demoFlume"/>
+        </Flume>
+
+    </appenders>
+
+    <loggers>
+
+        <root level="DEBUG">
+            <appender-ref ref="Console" />
+            <appender-ref ref="RollingFile" />
+            <appender-ref ref="FlumeMyAppender"/>
+        </root>
+    </loggers>
+</configuration>
